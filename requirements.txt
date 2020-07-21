@@ -1,0 +1,4 @@
+requests
+dataset
+dnspython
+git+https://gitlab.isc.org/isc-projects/python-rndc.git#egg=python-rndc
