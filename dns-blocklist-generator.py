@@ -75,6 +75,55 @@ default_blocklists = [
         'etag': None,
         'zonename': 'adblocknocoin.hoshsadiq.rpz.qw.se',
         'serial': 1
+    },
+    {
+        'url': 'https://urlhaus.abuse.ch/downloads/rpz/',
+        'regex': r'^(.*?) CNAME',
+        'etag': None,
+        'zonename': 'urlhaus.abusech.rpz.qw.se',
+        'serial': 1
+    },
+    {
+        'url': 'https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-blocklist.txt',
+        'regex': r'^(?!#)(\S+)',
+        'etag': None,
+        'zonename': 'notrack-blocklist.quidsup.rpz.qw.se',
+        'serial': 1
+    },
+    {
+        'url': 'https://v.firebog.net/hosts/AdguardDNS.txt',
+        'regex': r'^(?!#)(\S+)',
+        'etag': None,
+        'zonename': 'adguard.firebog.rpz.qw.se',
+        'serial': 1
+    },
+    {
+        'url': 'https://v.firebog.net/hosts/Easyprivacy.txt',
+        'regex': r'^(?!#)(\S+)',
+        'etag': None,
+        'zonename': 'easyprivacy.firebog.rpz.qw.se',
+        'serial': 1
+    },
+    {
+        'url': 'https://pgl.yoyo.org/adservers/serverlist.php?hostformat=rpz&showintro=0&mimetype=plaintext',
+        'regex': r'^(.*?) A',
+        'etag': None,
+        'zonename': 'pgl.yoyo.rpz.qw.se',
+        'serial': 1
+    },
+    {
+        'url': 'https://raw.githubusercontent.com/StevenBlack/hosts/master/data/KADhosts/hosts',
+        'regex': r'^0\.0\.0\.0 (\S+)',
+        'etag': None,
+        'zonename': 'kadhosts.stevenblack.rpz.qw.se',
+        'serial': 1
+    },
+    {
+        'url': 'https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt',
+        'regex': r'^0\.0\.0\.0 (\S+)',
+        'etag': None,
+        'zonename': 'adservers.anudeepnd.rpz.qw.se',
+        'serial': 1
     }
 ]
 
@@ -119,8 +168,10 @@ for bl in db['blocklists'].all():
 
     zone.to_file(os.path.join(zone_directory, bl['zonename']))
 
+    # auto reload BIND stuff
     #rndc.call(f"reload zone {bl[zonename]}") #also addzone as necessary?
 
     bl['serial'] = serial
-    bl['etag'] = r.headers['etag']
+    if 'etag' in r.headers:
+        bl['etag'] = r.headers['etag']
     db['blocklists'].update(bl, ['url'])
