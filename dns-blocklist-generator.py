@@ -156,7 +156,7 @@ for bl in db['blocklists'].all():
     zone = dns.zone.Zone(bl['zonename'])
     zone.replace_rdataset('@', dns.rdataset.from_text('IN', 'SOA', 7200, f"ns1.qw.se. hostmaster.qw.se. {serial} 3600 1800 3600000 7200"))
     zone.replace_rdataset('@', dns.rdataset.from_text('IN', 'NS', 7200, f"ns1.qw.se."))
-    zone.replace_rdataset('@', dns.rdataset.from_text('IN', 'TXT', 7200, f"\"Source: {bl['url']} (see this for copyright details)\""))
+    zone.replace_rdataset('_source', dns.rdataset.from_text('IN', 'TXT', 7200, f"\"Source: {bl['url']} (see this for copyright details)\""))
 
     for line in r.text.splitlines():
         m = re.search(bl['regex'], line)
