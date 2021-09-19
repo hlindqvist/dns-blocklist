@@ -49,13 +49,6 @@ default_blocklists = [
         'serial': 1
     },
     {
-        'url': 'https://mirror1.malwaredomains.com/files/justdomains',
-        'regex': r'^(?!#)(\S+)',
-        'etag': None,
-        'zonename': 'justdomains.malwaredomains.rpz.qw.se',
-        'serial': 1
-    },
-    {
         'url': 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt',
         'regex': r'^(?!#)(\S+)',
         'etag': None,
