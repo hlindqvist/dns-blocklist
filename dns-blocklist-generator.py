@@ -129,6 +129,14 @@ default_blocklists = [
         'last_modified': None,
         'zonename': 'adservers.anudeepnd.rpz.qw.se',
         'serial': 1
+    },
+    {
+        'url': 'https://rpz.oisd.nl/',
+        'regex': r'^(.*?) CNAME',
+        'etag': None,
+        'last_modified': None,
+        'zonename': 'rpz.oisd.nl.rpz.qw.se',
+        'serial': 1
     }
 ]
 
@@ -175,6 +183,9 @@ for bl in db['blocklists'].all():
     for line in r.text.splitlines():
         m = re.search(bl['regex'], line)
         if m:
+            if len(m.group(1)) > 253-len(bl['zonename']):
+                print(f"Error: {m.group(1)} + {bl['zonename']} is too long")
+                continue
             try:
                 zone.replace_rdataset(m.group(1).strip(), rpz_nxdomain)
             except Exception:
