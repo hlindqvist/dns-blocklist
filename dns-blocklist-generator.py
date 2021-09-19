@@ -46,6 +46,7 @@ default_blocklists = [
         'url': 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts',
         'regex': r'^0\.0\.0\.0 (\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'hosts.stevenblack.rpz.qw.se',
         'serial': 1
     },
@@ -53,6 +54,7 @@ default_blocklists = [
         'url': 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt',
         'regex': r'^(?!#)(\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'simpletracking.disconnectme.rpz.qw.se',
         'serial': 1
     },
@@ -60,6 +62,7 @@ default_blocklists = [
         'url': 'https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt',
         'regex': r'^(?!#)(\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'simplead.disconnectme.rpz.qw.se',
         'serial': 1
     },
@@ -67,6 +70,7 @@ default_blocklists = [
         'url': 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt',
         'regex': r'^\|\|([^\s/^]+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'adblocknocoin.hoshsadiq.rpz.qw.se',
         'serial': 1
     },
@@ -74,6 +78,7 @@ default_blocklists = [
         'url': 'https://urlhaus.abuse.ch/downloads/rpz/',
         'regex': r'^(.*?) CNAME',
         'etag': None,
+        'last_modified': None,
         'zonename': 'urlhaus.abusech.rpz.qw.se',
         'serial': 1
     },
@@ -81,6 +86,7 @@ default_blocklists = [
         'url': 'https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-blocklist.txt',
         'regex': r'^(?!#)(\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'notrack-blocklist.quidsup.rpz.qw.se',
         'serial': 1
     },
@@ -88,6 +94,7 @@ default_blocklists = [
         'url': 'https://v.firebog.net/hosts/AdguardDNS.txt',
         'regex': r'^(?!#)(\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'adguard.firebog.rpz.qw.se',
         'serial': 1
     },
@@ -95,6 +102,7 @@ default_blocklists = [
         'url': 'https://v.firebog.net/hosts/Easyprivacy.txt',
         'regex': r'^(?!#)(\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'easyprivacy.firebog.rpz.qw.se',
         'serial': 1
     },
@@ -102,6 +110,7 @@ default_blocklists = [
         'url': 'https://pgl.yoyo.org/adservers/serverlist.php?hostformat=rpz&showintro=0&mimetype=plaintext',
         'regex': r'^(.*?) A',
         'etag': None,
+        'last_modified': None,
         'zonename': 'pgl.yoyo.rpz.qw.se',
         'serial': 1
     },
@@ -109,6 +118,7 @@ default_blocklists = [
         'url': 'https://raw.githubusercontent.com/StevenBlack/hosts/master/data/KADhosts/hosts',
         'regex': r'^0\.0\.0\.0 (\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'kadhosts.stevenblack.rpz.qw.se',
         'serial': 1
     },
@@ -116,6 +126,7 @@ default_blocklists = [
         'url': 'https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt',
         'regex': r'^0\.0\.0\.0 (\S+)',
         'etag': None,
+        'last_modified': None,
         'zonename': 'adservers.anudeepnd.rpz.qw.se',
         'serial': 1
     }
@@ -140,7 +151,10 @@ if 'blocklists' not in db.tables:
 
 
 for bl in db['blocklists'].all():
-    headers = {'If-None-Match': bl['etag']}
+    if 'etag' in bl:
+        headers = {'If-None-Match': bl['etag']}
+    elif 'last_modified' in bl:
+        headers = {'If-Modified-Since': bl['last_modified']}
     r = requests.get(bl['url'], headers=headers)
 
     r.raise_for_status()
@@ -174,4 +188,6 @@ for bl in db['blocklists'].all():
     bl['serial'] = serial
     if 'etag' in r.headers:
         bl['etag'] = r.headers['etag']
+    elif 'last-modified' in r.headers:
+        bl['last_modified'] = r.headers['last-modified']
     db['blocklists'].update(bl, ['url'])
