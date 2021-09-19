@@ -32,6 +32,7 @@
 import requests
 import re
 import os
+import sys
 
 import dataset
 
@@ -120,7 +121,8 @@ default_blocklists = [
     }
 ]
 
-zone_directory = "." #"/var/named/rpz"
+
+zone_directory = sys.argv[1]
 
 rpz_nxdomain = dns.rdataset.from_text('IN', 'CNAME', 60, '.')
 
