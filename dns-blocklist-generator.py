@@ -131,6 +131,11 @@ db = dataset.connect('sqlite:///dns-blocklists.db')
 
 if 'blocklists' not in db.tables:
     for bl in default_blocklists:
+        if os.path.isfile(os.path.join(zone_directory, bl['zonename'])):
+            print(bl['zonename'])
+            original_zone = dns.zone.from_file(os.path.join(zone_directory, bl['zonename']), origin=bl['zonename'], relativize=False)
+            oldsoa = next(original_zone.iterate_rdatas(rdtype=dns.rdatatype.SOA))
+            bl['serial'] = oldsoa[2].serial
         db['blocklists'].insert(bl)
 
 
